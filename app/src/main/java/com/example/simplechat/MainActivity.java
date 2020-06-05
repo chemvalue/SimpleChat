@@ -3,12 +3,14 @@ package com.example.simplechat;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -17,6 +19,9 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private Toolbar mToolbar;
+    private ViewPager mViewpage;
+    private SectionsPageAdapter mSectionsPageAdapter;
+    private TabLayout mTablayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +32,12 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         Objects.requireNonNull(getSupportActionBar()).setTitle("Simple Chat");
 
+        mViewpage = (ViewPager) findViewById(R.id.main_tab_page);
+        mSectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
+
+        mViewpage.setAdapter(mSectionsPageAdapter);
+        mTablayout = findViewById(R.id.main_tabs);
+        mTablayout.setupWithViewPager(mViewpage);
 
     }
     @Override
@@ -58,6 +69,14 @@ public class MainActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.main_logout_btn){
             FirebaseAuth.getInstance().signOut();
             sendToStart();
+        }
+        if (item.getItemId() == R.id.main_setting_btn){
+            Intent settingsIntent = new Intent(MainActivity.this,SettingsActivity.class);
+            startActivity(settingsIntent);
+        }
+        if (item.getItemId() == R.id.main_all_btn){
+            Intent usersIntent = new Intent(MainActivity.this,UsersActivity.class);
+            startActivity(usersIntent);
         }
         return true;
     }

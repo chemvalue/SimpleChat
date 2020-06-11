@@ -15,31 +15,41 @@ import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-public class UsersActivity extends AppCompatActivity {
+public class FriendsActivity extends AppCompatActivity {
 
     private Toolbar mToolbar;
-    private RecyclerView mUsersList;
-    private DatabaseReference mDatabase;
+    private RecyclerView mFriendsList;
+    private DatabaseReference mUsersDatabase, mFriendsDatabase;
+    private FirebaseUser mAuth;
+    private String current_uid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_users);
+        setContentView(R.layout.activity_friends);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("User");
+        mAuth = FirebaseAuth.getInstance().getCurrentUser();
+        current_uid = mAuth.getUid();
+        mUsersDatabase = FirebaseDatabase.getInstance().getReference().child("User");
+        mFriendsDatabase = FirebaseDatabase.getInstance().getReference().child("Friends").child(current_uid);
 
-        mToolbar = findViewById(R.id.users_appbar);
+        mToolbar = findViewById(R.id.friends_appbar);
+
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("All users");
+        getSupportActionBar().setTitle("All Friends");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mUsersList = findViewById(R.id.users_list);
-        mUsersList.setHasFixedSize(true);
-        mUsersList.setLayoutManager(new LinearLayoutManager(this));
-
+        mFriendsList = findViewById(R.id.friends_list);
+        mFriendsList.setHasFixedSize(true);
+        mFriendsList.setLayoutManager(new LinearLayoutManager(this));
     }
 
     @Override
@@ -47,36 +57,38 @@ public class UsersActivity extends AppCompatActivity {
         super.onStart();
 
         FirebaseRecyclerOptions<Users> options = new FirebaseRecyclerOptions.Builder<Users>()
-                .setQuery(mDatabase, Users.class).build();
+                .setQuery(mUsersDatabase, Users.class).build();
 
-        FirebaseRecyclerAdapter<Users, UsersViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Users, UsersViewHolder>(
+        FirebaseRecyclerAdapter<Users, FriendsActivity.UsersViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Users, FriendsActivity.UsersViewHolder>(
                 options
-                ) {
+        ) {
             @Override
-            protected void onBindViewHolder(@NonNull UsersViewHolder holder, int position, @NonNull Users model) {
+            protected void onBindViewHolder(@NonNull FriendsActivity.UsersViewHolder holder, int position, @NonNull final Users model) {
                 holder.setName(model.getName());
 
                 final String uid = getRef(position).getKey();
                 holder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent profileIntent = new Intent(UsersActivity.this, ProfileActivity.class);
+                        Intent profileIntent = new Intent(FriendsActivity.this, ChatsActivity.class);
                         profileIntent.putExtra("User_id", uid);
+                        profileIntent.putExtra("user_name", model.getName());
                         startActivity(profileIntent);
+
                     }
                 });
             }
 
             @NonNull
             @Override
-            public UsersViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            public FriendsActivity.UsersViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.user_single_layout, parent, false);
                 return new UsersViewHolder(view);
             }
         };
         firebaseRecyclerAdapter.startListening();
-        mUsersList.setAdapter(firebaseRecyclerAdapter);
+        mFriendsList.setAdapter(firebaseRecyclerAdapter);
 
     }
 

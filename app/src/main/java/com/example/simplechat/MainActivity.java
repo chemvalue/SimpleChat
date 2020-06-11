@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mToolbar = findViewById(R.id.main_page_toolbar);
         setSupportActionBar(mToolbar);
-        Objects.requireNonNull(getSupportActionBar()).setTitle("Simple Chat");
+        getSupportActionBar().setTitle("Simple Chat");
 
         mViewpage = (ViewPager) findViewById(R.id.main_tab_page);
         mSectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
@@ -77,6 +77,10 @@ public class MainActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.main_all_btn){
             Intent usersIntent = new Intent(MainActivity.this,UsersActivity.class);
             startActivity(usersIntent);
+        }
+        if (item.getItemId() == R.id.main_friend_btn){
+            Intent friendIntent = new Intent(MainActivity.this,FriendsActivity.class);
+            startActivity(friendIntent);
         }
         return true;
     }

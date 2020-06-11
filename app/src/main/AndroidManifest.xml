@@ -3,13 +3,19 @@
     package="com.example.simplechat">
 
     <application
+        android:name=".SimpleChat"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ProfileActivity"></activity>
+        <activity android:name=".ChatsActivity"
+            android:parentActivityName=".MainActivity"></activity>
+        <activity
+            android:name=".FriendsActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity android:name=".ProfileActivity" />
         <activity
             android:name=".UsersActivity"
             android:parentActivityName=".MainActivity" />

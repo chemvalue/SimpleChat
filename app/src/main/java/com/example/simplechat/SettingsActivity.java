@@ -39,6 +39,7 @@ public class SettingsActivity extends AppCompatActivity {
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
         String current_uid = mCurrentUser.getUid();
         mDatabase = FirebaseDatabase.getInstance().getReference().child("User").child(current_uid);
+        mDatabase.keepSynced(true);
 
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
